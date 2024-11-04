@@ -1,0 +1,36 @@
+{
+  "matches": [
+    {
+      "team1": "Manchester United",
+      "team2": "Chelsea",
+      "score1": 1,
+      "score2": 2,
+      "status": "Full Time",
+      "startTime": "2024-11-04T20:30:00Z"
+    },
+    {
+      "team1": "Liverpool",
+      "team2": "Manchester City",
+      "score1": 3,
+      "score2": 3,
+      "status": "Full Time",
+      "startTime": "2024-11-05T18:00:00Z"
+    },
+    {
+      "team1": "Barcelona",
+      "team2": "Real Madrid",
+      "score1": 1,
+      "score2": 1,
+      "status": "Full Time",
+      "startTime": "2024-11-06T21:00:00Z"
+    },
+    {
+      "team1": "Juventus",
+      "team2": "Inter Milan",
+      "score1": 2,
+      "score2": 0,
+      "status": "Half Time",
+      "startTime": "2024-11-07T19:00:00Z"
+    }
+  ]
+}

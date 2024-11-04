@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "974524194741",
+    "project_id": "gamecast-4e795",
+    "storage_bucket": "gamecast-4e795.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:974524194741:android:3f7c2a208b594d70eac3fc",
+        "android_client_info": {
+          "package_name": "com.example.gamecast"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "974524194741-u9vokh2to4o8pagp0b6fuuuafegvm3n4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-7D-QerV_G80G2wU-2oKwFk8zWc9urR0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "974524194741-u9vokh2to4o8pagp0b6fuuuafegvm3n4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "974524194741-dne882a4jjf09qi1qb59pqcjomae0juh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterApplication1"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
