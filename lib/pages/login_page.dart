@@ -2,12 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // For Firestore queries
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart'; // For Google Sign-In
-import 'package:sangy/components/my_button.dart';
-import 'package:sangy/components/my_textfield.dart';
-import 'package:sangy/pages/forgotpasswordpage.dart';
-import 'package:sangy/pages/home_page.dart';
-import 'package:sangy/pages/registerpage.dart';
-import 'package:sangy/pages/simple_captha.dart'; // Import your SimpleCaptcha widget
+import 'package:gamecast/components/my_button.dart';
+import 'package:gamecast/components/my_textfield.dart';
+import 'package:gamecast/pages/forgotpasswordpage.dart';
+import 'package:gamecast/pages/home_page.dart';
+import 'package:gamecast/pages/registerpage.dart';
+import 'package:gamecast/pages/simple_captha.dart'; // Import your SimpleCaptcha widget
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -45,17 +45,22 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     try {
+      print("Starting Google sign-in process...");
+
       // Trigger the Google Authentication flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
       if (googleUser == null) {
+        print("Google sign-in canceled by user.");
         Navigator.pop(context); // Close the loading dialog
-        return; // User canceled the sign-in
+        return;
       }
 
       // Obtain the auth details from the request
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
+
+      print("Obtained Google Auth details.");
 
       // Create a new credential
       final OAuthCredential credential = GoogleAuthProvider.credential(
@@ -63,17 +68,21 @@ class _LoginPageState extends State<LoginPage> {
         idToken: googleAuth.idToken,
       );
 
-      // Once signed in, return the UserCredential
+      print("Attempting to sign in with Google credential...");
+
+      // Sign in to Firebase
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
 
-      // User signed in successfully
+      print("Google sign-in successful.");
+
       Navigator.pop(context); // Close the loading dialog
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomePage()),
       );
     } catch (e) {
+      print("Error during Google sign-in: ${e.toString()}");
       Navigator.pop(context); // Close the loading dialog
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${e.toString()}')),
@@ -170,7 +179,7 @@ class _LoginPageState extends State<LoginPage> {
   void forgotPassword() async {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
+      MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
     );
   }
 
@@ -213,7 +222,7 @@ class _LoginPageState extends State<LoginPage> {
                 color: Color(0xFFFF6600), // Accent color for icon
               ),
               const SizedBox(height: 50),
-              Text(
+              const Text(
                 'Welcome back',
                 style: TextStyle(
                   color: Colors.white70, // Light grey text
@@ -279,7 +288,7 @@ class _LoginPageState extends State<LoginPage> {
 
               // Google Sign-In button
               Padding(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 child: ElevatedButton(
                   onPressed: signInWithGoogle,
                   child: const Row(children: [
@@ -294,7 +303,7 @@ class _LoginPageState extends State<LoginPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     'Not a member?',
                     style: TextStyle(color: Colors.white70), // Light grey text
                   ),
@@ -303,7 +312,8 @@ class _LoginPageState extends State<LoginPage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => RegisterPage()),
+                        MaterialPageRoute(
+                            builder: (context) => const RegisterPage()),
                       );
                     },
                     child: const Text(

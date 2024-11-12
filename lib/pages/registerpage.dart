@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:sangy/components/my_button.dart';
-import 'package:sangy/components/my_textfield.dart';
-import 'package:sangy/pages/login_page.dart';
+import 'package:gamecast/components/my_button.dart';
+import 'package:gamecast/components/my_textfield.dart';
+import 'package:gamecast/pages/login_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});

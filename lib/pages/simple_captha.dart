@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:sangy/components/my_textfield.dart';
+import 'package:gamecast/components/my_textfield.dart';
 
 class SimpleCaptcha extends StatefulWidget {
   final Function(String) onVerify;
