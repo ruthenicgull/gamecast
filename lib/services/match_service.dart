@@ -95,14 +95,12 @@ class MatchService {
     return matches;
   }
 
-  Future<void> createMatch(FullMatchData matchData, String userId) async {
-    // Create match document
+  Future<String> createMatch(FullMatchData matchData, String userId) async {
     final matchRef = _firestore.collection('matches').doc();
     final matchId = matchRef.id;
 
     await matchRef.set(matchData.match.toFirestore());
 
-    // Create teams
     await matchRef
         .collection('teams')
         .doc('home')
@@ -112,23 +110,22 @@ class MatchService {
         .doc('away')
         .set(matchData.awayTeam.toFirestore());
 
-    // Create initial score
     await matchRef
         .collection('score')
         .doc('current')
         .set(matchData.score.toFirestore());
 
-    // Link match to user
     await _firestore.collection('userToMatches').doc(userId).set({
       'matchIds': FieldValue.arrayUnion([matchId])
     }, SetOptions(merge: true));
+
+    return matchId; // Return the generated matchId
   }
 
   Future<void> addMatchEvent(String matchId, MatchEvent event) async {
-    await _firestore
-        .collection('matches')
-        .doc(matchId)
-        .collection('events')
-        .add(event.toFirestore());
+    final matchRef = _firestore.collection('matches').doc(matchId);
+    final eventRef = matchRef.collection('events').doc();
+
+    await eventRef.set(event.toFirestore());
   }
 }

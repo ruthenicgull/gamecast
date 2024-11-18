@@ -113,7 +113,7 @@ class _AddMatchPageState extends State<AddMatchPage> {
     if (_formKey.currentState!.validate() && startTime != null) {
       final userId = FirebaseAuth.instance.currentUser!.uid;
       final match = Match(
-        matchId: '', // Will be set by Firestore
+        matchId: '', // Will be updated after creation
         startTime: startTime!,
         endTime: startTime!.add(Duration(hours: 2)), // Default duration
         status: 'live',
@@ -144,15 +144,17 @@ class _AddMatchPageState extends State<AddMatchPage> {
       );
 
       try {
-        await _matchService.createMatch(fullMatchData, userId);
+        // Create match and get matchId
+        final matchId = await _matchService.createMatch(fullMatchData, userId);
+        setState(() {
+          isRecording = true;
+          currentMatchId = matchId; // Set the generated matchId
+          match.matchId = matchId; // Update the match object
+        });
       } catch (e) {
         print('Error creating match: $e');
         // Optionally show an error dialog to the user
       }
-      setState(() {
-        isRecording = true;
-        currentMatchId = match.matchId;
-      });
     }
   }
 
@@ -209,8 +211,8 @@ class _AddMatchPageState extends State<AddMatchPage> {
                             MaterialPageRoute(
                               builder: (context) => RecordEventsPage(
                                 matchId: currentMatchId!,
-                                homeTeam: homeTeamName,
-                                awayTeam: awayTeamName,
+                                homeTeamName: homeTeamName,
+                                awayTeamName: awayTeamName,
                               ),
                             ),
                           );

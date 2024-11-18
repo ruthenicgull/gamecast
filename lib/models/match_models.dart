@@ -9,7 +9,7 @@ enum EventType { goal, yellowCard, redCard, substitution, foul }
 
 // Match Model
 class Match {
-  final String matchId;
+  String matchId;
   final DateTime startTime;
   final DateTime endTime;
   final String status; // live, past, upcoming
