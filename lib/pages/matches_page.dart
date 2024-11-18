@@ -106,6 +106,8 @@ import 'package:gamecast/pages/match_page.dart';
 import '../widgets/match_card.dart';
 import '../services/match_service.dart';
 import 'package:gamecast/models/match_models.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MatchesPage extends StatefulWidget {
   const MatchesPage({super.key});
@@ -443,19 +445,231 @@ class _PastMatchesTabState extends State<PastMatchesTab> {
   }
 }
 
-// Users Tab
-class UsersTab extends StatelessWidget {
+class UsersTab extends StatefulWidget {
   const UsersTab({super.key});
+
+  @override
+  _UsersTabState createState() => _UsersTabState();
+}
+
+class _UsersTabState extends State<UsersTab> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  late TextEditingController _nameController;
+  late TextEditingController _emailController;
+
+  bool _isLoading = true;
+  bool _isNameEditing = false;
+  bool _isEmailEditing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+    _emailController = TextEditingController();
+    _fetchCurrentUserData();
+  }
+
+  Future<void> _fetchCurrentUserData() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        final doc = await _firestore.collection('users').doc(user.uid).get();
+        if (doc.exists) {
+          setState(() {
+            _nameController.text = doc['name'];
+            _emailController.text = doc['email'];
+            _isLoading = false;
+          });
+        } else {
+          throw Exception('User data not found in Firestore.');
+        }
+      } else {
+        throw Exception('No user is currently signed in.');
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to load user data')),
+        );
+      }
+    }
+  }
+
+  Future<void> _updateUserData() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        await _firestore.collection('users').doc(user.uid).update({
+          'name': _nameController.text,
+          'email': _emailController.text,
+        });
+        setState(() {
+          _isNameEditing = false;
+          _isEmailEditing = false;
+        });
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Profile updated successfully')),
+          );
+        }
+      }
+    } catch (e) {
+      print('Error updating user data: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to update profile')),
+        );
+      }
+    }
+  }
+
+  Future<void> _logout() async {
+    try {
+      await _auth.signOut();
+      if (mounted) {
+        // Navigate to login screen or home screen
+        Navigator.of(context).pushReplacementNamed(
+            '/login'); // Adjust this route name according to your app's routing
+      }
+    } catch (e) {
+      print('Error during logout: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to logout')),
+        );
+      }
+    }
+  }
+
+  Future<void> _showLogoutDialog() async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Logout'),
+          content: const Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _logout();
+              },
+              child: const Text('Logout', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildTextField({
+    required String label,
+    required TextEditingController controller,
+    required bool isEditing,
+    required Function() onEditPressed,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 8),
+        Stack(
+          alignment: Alignment.centerRight,
+          children: [
+            TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: 'Enter your ${label.toLowerCase()}',
+                border: const OutlineInputBorder(),
+                contentPadding: const EdgeInsets.fromLTRB(16, 16, 48, 16),
+              ),
+              enabled: isEditing,
+            ),
+            Positioned(
+              right: 8,
+              child: IconButton(
+                icon: Icon(
+                  isEditing ? Icons.check : Icons.edit,
+                  color: Colors.grey,
+                ),
+                onPressed: onEditPressed,
+                tooltip: isEditing ? 'Save' : 'Edit ${label.toLowerCase()}',
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Users'),
+        title: const Text('User Profile'),
       ),
-      body: const Center(
-        child: Text('Users tab content'), // Implement your users list here
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildTextField(
+                    label: 'Name',
+                    controller: _nameController,
+                    isEditing: _isNameEditing,
+                    onEditPressed: () {
+                      if (_isNameEditing) {
+                        _updateUserData();
+                      } else {
+                        setState(() {
+                          _isNameEditing = true;
+                          _isEmailEditing = false;
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  _buildTextField(
+                    label: 'Email',
+                    controller: _emailController,
+                    isEditing: _isEmailEditing,
+                    onEditPressed: () {
+                      if (_isEmailEditing) {
+                        _updateUserData();
+                      } else {
+                        setState(() {
+                          _isEmailEditing = true;
+                          _isNameEditing = false;
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _showLogoutDialog,
+        icon: const Icon(Icons.logout),
+        label: const Text('Logout'),
+        backgroundColor: Colors.red,
+        foregroundColor: Colors.white,
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    super.dispose();
   }
 }
