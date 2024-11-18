@@ -143,7 +143,12 @@ class _AddMatchPageState extends State<AddMatchPage> {
         events: [],
       );
 
-      await _matchService.createMatch(fullMatchData, userId);
+      try {
+        await _matchService.createMatch(fullMatchData, userId);
+      } catch (e) {
+        print('Error creating match: $e');
+        // Optionally show an error dialog to the user
+      }
       setState(() {
         isRecording = true;
         currentMatchId = match.matchId;
@@ -187,7 +192,7 @@ class _AddMatchPageState extends State<AddMatchPage> {
               _buildPlayerList(false),
               SizedBox(height: 24),
               if (!isRecording)
-                ElevatedButton(
+                OutlinedButton(
                   onPressed: _startMatch,
                   child: Text('Start Match'),
                 )

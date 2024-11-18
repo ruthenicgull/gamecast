@@ -76,7 +76,11 @@ class Team {
   Map<String, dynamic> toFirestore() {
     return {
       'team_name': teamName,
-      'team_type': teamType,
+      'team_type': teamType
+          .name, // Use .name to get the string representation of the enum
+      'players': players
+          .map((player) => player.toFirestore())
+          .toList(), // Convert each player to a map
     };
   }
 }
@@ -112,7 +116,7 @@ class Player {
     return {
       'name': name,
       'shirt_number': shirtNumber,
-      'status': status,
+      'status': status.name, // Use .name to store enum as a string
     };
   }
 }
