@@ -128,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                     child: _isLoading
-                        ? SizedBox(
+                        ? const SizedBox(
                             height: 20,
                             width: 20,
                             child: CircularProgressIndicator(
@@ -137,7 +137,7 @@ class _LoginPageState extends State<LoginPage> {
                                   AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
-                        : Text('Sign In'),
+                        : const Text('Sign In'),
                   ),
                   const SizedBox(height: 16),
                   TextButton(

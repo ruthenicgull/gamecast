@@ -112,6 +112,18 @@ class Player {
     );
   }
 
+  factory Player.fromMap(Map<String, dynamic> data, String playerId) {
+    return Player(
+      playerId: playerId,
+      name: data['name'] ?? '',
+      shirtNumber: data['shirt_number'] ?? 0,
+      status: PlayerStatus.values.firstWhere(
+        (e) => e.toString() == 'PlayerStatus.${data['status']}',
+        orElse: () => PlayerStatus.substitute,
+      ),
+    );
+  }
+
   Map<String, dynamic> toFirestore() {
     return {
       'name': name,
@@ -149,7 +161,7 @@ class Score {
 
 // Event Model
 class MatchEvent {
-  final String eventId;
+  String? eventId;
   final EventType eventType;
   final int eventMinute;
   final String player1Id;
@@ -157,7 +169,7 @@ class MatchEvent {
   final String teamId;
 
   MatchEvent({
-    required this.eventId,
+    this.eventId,
     required this.eventType,
     required this.eventMinute,
     required this.player1Id,
@@ -182,7 +194,7 @@ class MatchEvent {
 
   Map<String, dynamic> toFirestore() {
     return {
-      'event_type': eventType,
+      'event_type': eventType.name,
       'event_time': eventMinute,
       'player_1_id': player1Id,
       'player_2_id': player2Id,

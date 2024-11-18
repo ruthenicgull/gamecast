@@ -26,7 +26,7 @@ class _RecordEventsPageState extends State<RecordEventsPage> {
   String? _selectedTeamName;
   String? _selectedPlayer1;
   String? _selectedPlayer2;
-  EventType? _selectedEventType;
+  EventType _selectedEventType = EventType.goal;
 
   List<Player> _homeTeamPlayers = [];
   List<Player> _awayTeamPlayers = [];
@@ -37,64 +37,81 @@ class _RecordEventsPageState extends State<RecordEventsPage> {
   @override
   void initState() {
     super.initState();
+    print("init state");
     _loadTeamsAndPlayers();
   }
 
+  List<Player> parsePlayers(List<dynamic> playersData) {
+    return playersData.asMap().entries.map((entry) {
+      final playerId = entry.key
+          .toString(); // Use the index or a unique identifier if available
+      final playerData = entry.value as Map<String, dynamic>;
+      return Player.fromMap(playerData, playerId);
+    }).toList();
+  }
+
   Future<void> _loadTeamsAndPlayers() async {
-    setState(() {
-      _isLoading = true;
-    });
+    print("load team and players");
+    // setState(() {
+    //   _isLoading = true;
+    // });
 
     try {
       final matchRef =
           FirebaseFirestore.instance.collection('matches').doc(widget.matchId);
 
-      final homeTeamDoc = await matchRef.collection('teams').doc('home').get();
-      final awayTeamDoc = await matchRef.collection('teams').doc('away').get();
+      DocumentReference homeTeamRef = matchRef.collection('teams').doc('home');
+      DocumentReference awayTeamRef = matchRef.collection('teams').doc('away');
 
-      if (!homeTeamDoc.exists || !awayTeamDoc.exists) {
-        throw Exception("Teams not found");
-      }
+      DocumentSnapshot homeSnapshot = await homeTeamRef.get();
+      DocumentSnapshot awaySnapshot = await awayTeamRef.get();
 
-      final homePlayersSnapshot = await matchRef
-          .collection('teams')
-          .doc('home')
-          .collection('players')
-          .get();
+      List<dynamic> homePlayers = homeSnapshot.get('players') ?? [];
+      List<dynamic> awayPlayers = awaySnapshot.get('players') ?? [];
 
-      final awayPlayersSnapshot = await matchRef
-          .collection('teams')
-          .doc('away')
-          .collection('players')
-          .get();
+      // print("teams found");
 
-      final homePlayers = homePlayersSnapshot.docs
-          .map((doc) => Player.fromFirestore(doc))
-          .toList();
+      // print('Home Team Players: $homePlayers');
+      // print('Away Team Players: $awayPlayers');
 
-      final awayPlayers = awayPlayersSnapshot.docs
-          .map((doc) => Player.fromFirestore(doc))
-          .toList();
+      List<Player> homeTeamPlayers = homePlayers.map((playerData) {
+        return Player.fromMap(playerData,
+            playerData['name']); // Using name as playerId for this example
+      }).toList();
+
+      List<Player> awayTeamPlayers = awayPlayers.map((playerData) {
+        return Player.fromMap(playerData,
+            playerData['name']); // Using name as playerId for this example
+      }).toList();
+
+      // print("Home Team Players: $homeTeamPlayers");
+      // print("Away Team Players: $awayTeamPlayers");
+
+      // print(homePlayers[0]);
+      print("Trying hometeam and awayteam");
 
       final homeTeam = Team(
-        teamId: homeTeamDoc.id,
-        teamName: homeTeamDoc.data()?['team_name'] ?? '',
+        teamId: homeTeamRef.id,
+        teamName: homeSnapshot.get('team_name') ?? '' as String,
         teamType: TeamType.home,
-        players: homePlayers,
+        players: homeTeamPlayers,
       );
 
       final awayTeam = Team(
-        teamId: awayTeamDoc.id,
-        teamName: awayTeamDoc.data()?['team_name'] ?? '',
+        teamId: awayTeamRef.id,
+        teamName: awaySnapshot.get('team_name') ?? '' as String,
         teamType: TeamType.away,
-        players: awayPlayers,
+        players: awayTeamPlayers,
       );
+
+      print("homeTeam $homeTeam");
+      print(awayTeam.teamId);
 
       setState(() {
         _homeTeam = homeTeam;
         _awayTeam = awayTeam;
-        _homeTeamPlayers = homePlayers;
-        _awayTeamPlayers = awayPlayers;
+        _homeTeamPlayers = homeTeamPlayers;
+        _awayTeamPlayers = awayTeamPlayers;
         _isLoading = false;
       });
     } catch (e) {
@@ -106,20 +123,17 @@ class _RecordEventsPageState extends State<RecordEventsPage> {
   }
 
   List<String> _getAvailablePlayers() {
-    _loadTeamsAndPlayers();
     if (_selectedTeamName == null) return [];
-    print("match id ${widget.matchId}");
-    print("TEAM NAME: $_selectedTeamName");
-    print(widget.homeTeamName);
     final players = _selectedTeamName == widget.homeTeamName
         ? _homeTeamPlayers
         : _awayTeamPlayers;
 
-    print("Players: $players");
     return players.map((player) => player.name).toList();
   }
 
   Future<void> _recordEvent() async {
+    print(widget.matchId);
+    print("inside recordevent");
     if (_validateForm()) {
       try {
         final selectedTeam =
@@ -130,9 +144,18 @@ class _RecordEventsPageState extends State<RecordEventsPage> {
             ? _getPlayerByName(_selectedPlayer2!)
             : null;
 
+        print(_selectedEventType);
+        // final eventType = EventType.values.firstWhere(
+        //   (e) => e.toString().split('.').last == _selectedEventType,
+        //   orElse: () =>
+        //       throw ArgumentError('Invalid event type: $_selectedEventType'),
+        // );
+
+        // print(eventType);
+
+        print("problem starts");
         final event = MatchEvent(
-          eventId: '', // Firestore will generate this
-          eventType: _selectedEventType!,
+          eventType: _selectedEventType,
           eventMinute: int.parse(_eventMinuteController.text),
           player1Id: player1.playerId,
           player2Id: player2?.playerId,
@@ -140,7 +163,7 @@ class _RecordEventsPageState extends State<RecordEventsPage> {
         );
 
         await _matchService.addMatchEvent(widget.matchId, event);
-
+        print("problem ends");
         _resetForm();
         _showSnackbar('Event recorded successfully');
       } catch (e) {
@@ -199,7 +222,7 @@ class _RecordEventsPageState extends State<RecordEventsPage> {
       _selectedTeamName = null;
       _selectedPlayer1 = null;
       _selectedPlayer2 = null;
-      _selectedEventType = null;
+      _selectedEventType = EventType.goal;
       _eventMinuteController.clear();
     });
   }
@@ -299,7 +322,7 @@ class _RecordEventsPageState extends State<RecordEventsPage> {
         );
       }).toList(),
       onChanged: (value) => setState(() {
-        _selectedEventType = value;
+        _selectedEventType = value!;
       }),
     );
   }

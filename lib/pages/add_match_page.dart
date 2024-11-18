@@ -97,7 +97,7 @@ class _AddMatchPageState extends State<AddMatchPage> {
   Future<void> _addPlayer(bool isHomeTeam) async {
     final player = await showDialog<Player>(
       context: context,
-      builder: (context) => AddPlayerDialog(),
+      builder: (context) => const AddPlayerDialog(),
     );
 
     if (player != null) {
@@ -112,10 +112,9 @@ class _AddMatchPageState extends State<AddMatchPage> {
   }
 
   Future<void> _startMatch() async {
-    print("asasa");
     if (_formKey.currentState!.validate() && startTime != null) {
       final userId = FirebaseAuth.instance.currentUser!.uid;
-      print(userId);
+  
       final match = Match(
         matchId: '', // Will be updated after creation
         startTime: startTime!,
@@ -150,6 +149,7 @@ class _AddMatchPageState extends State<AddMatchPage> {
       try {
         // Create match and get matchId
         final matchId = await _matchService.createMatch(fullMatchData, userId);
+        
         setState(() {
           isRecording = true;
           currentMatchId = matchId; // Set the generated matchId

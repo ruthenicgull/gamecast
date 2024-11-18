@@ -225,7 +225,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                     child: _isLoading
-                        ? SizedBox(
+                        ? const SizedBox(
                             height: 20,
                             width: 20,
                             child: CircularProgressIndicator(
@@ -234,7 +234,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
-                        : Text('Register'),
+                        : const Text('Register'),
                   ),
                   const SizedBox(height: 16),
                   GestureDetector(

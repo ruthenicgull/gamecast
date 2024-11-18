@@ -337,9 +337,19 @@ class MatchService {
   }
 
   Future<void> addMatchEvent(String matchId, MatchEvent event) async {
+    print("insisde add match evebnt");
     final matchRef = _firestore.collection('matches').doc(matchId);
+    print(matchRef);
     final eventRef = matchRef.collection('events').doc();
+    print(eventRef);
 
-    await eventRef.set(event.toFirestore());
+    try {
+      await eventRef.set(
+        event.toFirestore(),
+      );
+      print("added success");
+    } catch (e) {
+      print("error while adding: $e");
+    }
   }
 }
