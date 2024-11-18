@@ -4,7 +4,7 @@ import '../models/match_models.dart';
 class StatsTab extends StatelessWidget {
   final FullMatchData matchData;
 
-  const StatsTab({Key? key, required this.matchData}) : super(key: key);
+  const StatsTab({super.key, required this.matchData});
 
   Map<String, Map<String, int>> _calculateStats() {
     final homeStats = {
@@ -46,18 +46,18 @@ class StatsTab extends StatelessWidget {
 
   Widget _buildStatRow(String label, int homeValue, int awayValue) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
           Expanded(
             child: Text(
               homeValue.toString(),
               textAlign: TextAlign.end,
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               label,
               style: TextStyle(
@@ -69,7 +69,7 @@ class StatsTab extends StatelessWidget {
           Expanded(
             child: Text(
               awayValue.toString(),
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
           ),
         ],
@@ -82,7 +82,7 @@ class StatsTab extends StatelessWidget {
     final stats = _calculateStats();
 
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           Row(
@@ -92,7 +92,7 @@ class StatsTab extends StatelessWidget {
               Text(matchData.awayTeam.teamName),
             ],
           ),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           _buildStatRow(
               'Goals', stats['home']!['goals']!, stats['away']!['goals']!),
           _buildStatRow('Yellow Cards', stats['home']!['yellowCards']!,

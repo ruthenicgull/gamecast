@@ -141,7 +141,7 @@ class _RecordEventsPageState extends State<RecordEventsPage> {
               }),
             ),
             DropdownButtonFormField<EventType>(
-              decoration: InputDecoration(labelText: 'Event Type'),
+              decoration: const InputDecoration(labelText: 'Event Type'),
               value: _selectedEventType,
               items: EventType.values
                   .map((type) => DropdownMenuItem(

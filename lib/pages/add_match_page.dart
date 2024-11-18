@@ -6,6 +6,8 @@ import 'package:gamecast/widgets/add_player_dialog.dart';
 import 'package:gamecast/pages/record_events_page.dart';
 
 class AddMatchPage extends StatefulWidget {
+  const AddMatchPage({super.key});
+
   @override
   _AddMatchPageState createState() => _AddMatchPageState();
 }
@@ -25,8 +27,8 @@ class _AddMatchPageState extends State<AddMatchPage> {
     final DateTime? date = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime.now().subtract(Duration(days: 1)),
-      lastDate: DateTime.now().add(Duration(days: 365)),
+      firstDate: DateTime.now().subtract(const Duration(days: 1)),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
     );
     if (date != null) {
       final TimeOfDay? time = await showTimePicker(
@@ -55,17 +57,17 @@ class _AddMatchPageState extends State<AddMatchPage> {
       children: [
         Text(
           isHomeTeam ? 'Home Team Players' : 'Away Team Players',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         ListView.builder(
           shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           itemCount: players.length + 1,
           itemBuilder: (context, index) {
             if (index == players.length) {
               return TextButton(
                 onPressed: () => _addPlayer(isHomeTeam),
-                child: Text('Add Player'),
+                child: const Text('Add Player'),
               );
             }
             final player = players[index];
@@ -74,7 +76,7 @@ class _AddMatchPageState extends State<AddMatchPage> {
               subtitle: Text(
                   '${player.shirtNumber} - ${player.status.toString().split('.').last}'),
               trailing: IconButton(
-                icon: Icon(Icons.delete),
+                icon: const Icon(Icons.delete),
                 onPressed: () {
                   setState(() {
                     if (isHomeTeam) {
@@ -110,12 +112,14 @@ class _AddMatchPageState extends State<AddMatchPage> {
   }
 
   Future<void> _startMatch() async {
+    print("asasa");
     if (_formKey.currentState!.validate() && startTime != null) {
       final userId = FirebaseAuth.instance.currentUser!.uid;
+      print(userId);
       final match = Match(
         matchId: '', // Will be set by Firestore
         startTime: startTime!,
-        endTime: startTime!.add(Duration(hours: 2)), // Default duration
+        endTime: startTime!.add(const Duration(hours: 2)), // Default duration
         status: 'live',
       );
 
@@ -160,47 +164,47 @@ class _AddMatchPageState extends State<AddMatchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Match'),
+        title: const Text('Add Match'),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextButton.icon(
-                icon: Icon(Icons.calendar_today),
+                icon: const Icon(Icons.calendar_today),
                 label: Text(startTime?.toString() ?? 'Select Start Time'),
                 onPressed: () => _selectDateTime(context),
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Home Team Name'),
+                decoration: const InputDecoration(labelText: 'Home Team Name'),
                 validator: (value) =>
                     value?.isEmpty ?? true ? 'Required' : null,
                 onChanged: (value) => homeTeamName = value,
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Away Team Name'),
+                decoration: const InputDecoration(labelText: 'Away Team Name'),
                 validator: (value) =>
                     value?.isEmpty ?? true ? 'Required' : null,
                 onChanged: (value) => awayTeamName = value,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildPlayerList(true),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildPlayerList(false),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               if (!isRecording)
                 OutlinedButton(
                   onPressed: _startMatch,
-                  child: Text('Start Match'),
+                  child: const Text('Start Match'),
                 )
               else
                 Column(
                   children: [
-                    Text('Recording Match Events'),
-                    SizedBox(height: 8),
+                    const Text('Recording Match Events'),
+                    const SizedBox(height: 8),
                     ElevatedButton(
                       onPressed: () {
                         if (currentMatchId != null) {
@@ -216,7 +220,7 @@ class _AddMatchPageState extends State<AddMatchPage> {
                           );
                         }
                       },
-                      child: Text('Record Events'),
+                      child: const Text('Record Events'),
                     ),
                   ],
                 ),

@@ -4,7 +4,7 @@ import '../models/match_models.dart';
 class LineupsTab extends StatelessWidget {
   final FullMatchData matchData;
 
-  const LineupsTab({Key? key, required this.matchData}) : super(key: key);
+  const LineupsTab({super.key, required this.matchData});
 
   Widget _buildTeamLineup(Team team) {
     final startingPlayers =
@@ -17,16 +17,16 @@ class LineupsTab extends StatelessWidget {
       children: [
         Text(
           team.teamName,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 8),
-        Text(
+        const SizedBox(height: 8),
+        const Text(
           'Starting Lineup',
           style: TextStyle(fontWeight: FontWeight.w500),
         ),
         ListView.builder(
           shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           itemCount: startingPlayers.length,
           itemBuilder: (context, index) {
             final player = startingPlayers[index];
@@ -38,14 +38,14 @@ class LineupsTab extends StatelessWidget {
             );
           },
         ),
-        SizedBox(height: 16),
-        Text(
+        const SizedBox(height: 16),
+        const Text(
           'Substitutes',
           style: TextStyle(fontWeight: FontWeight.w500),
         ),
         ListView.builder(
           shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           itemCount: substitutes.length,
           itemBuilder: (context, index) {
             final player = substitutes[index];
@@ -64,11 +64,11 @@ class LineupsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           _buildTeamLineup(matchData.homeTeam),
-          Divider(height: 32),
+          const Divider(height: 32),
           _buildTeamLineup(matchData.awayTeam),
         ],
       ),

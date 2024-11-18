@@ -4,7 +4,7 @@ import '../models/match_models.dart';
 class EventsTab extends StatelessWidget {
   final FullMatchData matchData;
 
-  const EventsTab({Key? key, required this.matchData}) : super(key: key);
+  const EventsTab({super.key, required this.matchData});
 
   String _getEventDescription(MatchEvent event) {
     final team = matchData.getTeamById(event.teamId);
@@ -47,7 +47,7 @@ class EventsTab extends StatelessWidget {
       itemBuilder: (context, index) {
         final event = sortedEvents[index];
         return Card(
-          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: ListTile(
             leading: CircleAvatar(
               child: Text('${event.eventMinute}\''),

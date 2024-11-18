@@ -4,12 +4,12 @@ import '../models/match_models.dart';
 class MatchHeader extends StatelessWidget {
   final FullMatchData matchData;
 
-  const MatchHeader({Key? key, required this.matchData}) : super(key: key);
+  const MatchHeader({super.key, required this.matchData});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.blue, Colors.blue.shade800],
@@ -19,9 +19,9 @@ class MatchHeader extends StatelessWidget {
         children: [
           Text(
             matchData.match.startTime.toString(),
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -29,7 +29,7 @@ class MatchHeader extends StatelessWidget {
                 child: Text(
                   matchData.homeTeam.teamName,
                   textAlign: TextAlign.end,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -37,10 +37,10 @@ class MatchHeader extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Text(
                   '${matchData.score.homeScore} - ${matchData.score.awayScore}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
@@ -50,7 +50,7 @@ class MatchHeader extends StatelessWidget {
               Expanded(
                 child: Text(
                   matchData.awayTeam.teamName,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/match_models.dart';
 
 class AddPlayerDialog extends StatefulWidget {
+  const AddPlayerDialog({super.key});
+
   @override
   _AddPlayerDialogState createState() => _AddPlayerDialogState();
 }
@@ -15,14 +17,14 @@ class _AddPlayerDialogState extends State<AddPlayerDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Add Player'),
+      title: const Text('Add Player'),
       content: Form(
         key: _formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextFormField(
-              decoration: InputDecoration(labelText: 'Player Name'),
+              decoration: const InputDecoration(labelText: 'Player Name'),
               validator: (value) =>
                   value?.isEmpty ?? true ? 'Name is required' : null,
               onSaved: (value) => _name = value ?? '',
@@ -59,7 +61,7 @@ class _AddPlayerDialogState extends State<AddPlayerDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text('Cancel'),
+          child: const Text('Cancel'),
         ),
         ElevatedButton(
           onPressed: () {
@@ -74,7 +76,7 @@ class _AddPlayerDialogState extends State<AddPlayerDialog> {
               Navigator.of(context).pop(player);
             }
           },
-          child: Text('Add'),
+          child: const Text('Add'),
         ),
       ],
     );
