@@ -1,115 +1,80 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:gamecast/components/base_scaffold.dart';
-import 'package:gamecast/models/event_model.dart';
-import 'package:gamecast/models/match_model.dart'; // Assuming you have a Match model
-import 'package:gamecast/components/match_card.dart'; // You can create a MatchCard widget for the match info
-import 'package:gamecast/components/event_list.dart'; // A widget to display events for a match
+import 'package:gamecast/pages/add_match_page.dart';
+import 'package:gamecast/pages/match_page.dart';
+import '../widgets/match_card.dart';
+import '../services/match_service.dart';
+import 'package:gamecast/models/match_models.dart';
 
 class MatchesPage extends StatefulWidget {
-  const MatchesPage({super.key});
-
   @override
   _MatchesPageState createState() => _MatchesPageState();
 }
 
 class _MatchesPageState extends State<MatchesPage> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  // Fetching matches from Firestore
-  Future<List<Match>> _fetchMatches() async {
-    final snapshot = await _firestore.collection('matches').get();
-    return snapshot.docs
-        .map((doc) =>
-            Match.fromMap(doc.data() as Map<String, dynamic>, id: doc.id))
-        .toList();
-  }
+  final MatchService _matchService = MatchService();
+  DateTime selectedDate = DateTime.now();
+  List<FullMatchData> matches = [];
 
   @override
-  Widget build(BuildContext context) {
-    return BaseScaffold(
-      title: "Matches",
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: FutureBuilder<List<Match>>(
-          future: _fetchMatches(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
+  void initState() {
+    super.initState();
+    _loadMatches();
+  }
 
-            if (snapshot.hasError) {
-              return const Center(child: Text("Error loading matches"));
-            }
+  Future<void> _loadMatches() async {
+    final matchesList = await _matchService.getMatchesByDate(selectedDate);
+    setState(() {
+      matches = matchesList;
+    });
+  }
 
-            if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text("No matches available"));
-            }
-
-            final matches = snapshot.data!;
-
-            return ListView.builder(
-              itemCount: matches.length,
-              itemBuilder: (context, index) {
-                final match = matches[index];
-
-                return MatchCard(
-                  match: match, // Display the match info on the card
-                  onTap: () {
-                    // On card tap, navigate to the match events screen
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            MatchEventsPage(matchId: match.id),
-                      ),
-                    );
-                  },
-                );
-              },
-            );
-          },
-        ),
-      ),
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2025),
     );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+      _loadMatches();
+    }
   }
-}
-
-class MatchEventsPage extends StatelessWidget {
-  final String matchId;
-
-  const MatchEventsPage({super.key, required this.matchId});
 
   @override
   Widget build(BuildContext context) {
-    return BaseScaffold(
-      title: "Match Events",
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: StreamBuilder<DocumentSnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('matches')
-              .doc(matchId)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (!snapshot.hasData || snapshot.data!.data() == null) {
-              return const Center(child: Text("No events recorded yet."));
-            }
-
-            final matchData = snapshot.data!.data() as Map<String, dynamic>;
-            final events = (matchData['events'] as List)
-                .map((e) => MatchEvent.fromMap(e as Map<String, dynamic>))
-                .toList();
-
-            return EventList(
-                events: events); // Display events using EventList widget
-          },
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Matches'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.calendar_today),
+            onPressed: () => _selectDate(context),
+          ),
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AddMatchPage()),
+            ),
+          ),
+        ],
       ),
+      body: ListView.builder(
+          itemCount: matches.length,
+          itemBuilder: (context, index) {
+            return MatchCard(
+              matchData: matches[index],
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MatchPage(matchData: matches[index]),
+                ),
+              ),
+            );
+          }),
     );
   }
 }
