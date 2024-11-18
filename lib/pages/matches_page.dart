@@ -22,7 +22,7 @@ class _MatchesPageState extends State<MatchesPage> {
   }
 
   Future<void> _loadMatches() async {
-    final matchesList = await _matchService.getMatchesByDate(selectedDate);
+    final matchesList = await _matchService.getAllMatches();
     setState(() {
       matches = matchesList;
     });

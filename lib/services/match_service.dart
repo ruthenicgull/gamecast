@@ -53,6 +53,48 @@ class MatchService {
     return matches;
   }
 
+  Future<List<FullMatchData>> getAllMatches() async {
+    final matchesSnapshot = await _firestore.collection('matches').get();
+
+    List<FullMatchData> matches = [];
+    for (var doc in matchesSnapshot.docs) {
+      final match = Match.fromFirestore(doc);
+      // Fetch related data
+      final homeTeamDoc = await _firestore
+          .collection('matches')
+          .doc(match.matchId)
+          .collection('teams')
+          .doc('home')
+          .get();
+      final awayTeamDoc = await _firestore
+          .collection('matches')
+          .doc(match.matchId)
+          .collection('teams')
+          .doc('away')
+          .get();
+      final scoreDoc = await _firestore
+          .collection('matches')
+          .doc(match.matchId)
+          .collection('score')
+          .doc('current')
+          .get();
+      final eventsSnapshot = await _firestore
+          .collection('matches')
+          .doc(match.matchId)
+          .collection('events')
+          .get();
+
+      matches.add(FullMatchData.fromFirestore(
+        matchDoc: doc,
+        homeTeamDoc: homeTeamDoc,
+        awayTeamDoc: awayTeamDoc,
+        scoreDoc: scoreDoc,
+        eventDocs: eventsSnapshot.docs,
+      ));
+    }
+    return matches;
+  }
+
   Future<void> createMatch(FullMatchData matchData, String userId) async {
     // Create match document
     final matchRef = _firestore.collection('matches').doc();
