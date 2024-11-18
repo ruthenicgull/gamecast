@@ -237,22 +237,34 @@ class _RegisterPageState extends State<RegisterPage> {
                   SizedBox(height: 16),
                   GestureDetector(
                     onTap: _isLoading ? null : _registerWithGoogle,
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.network(
-                              "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/500px-Google_2015_logo.svg.png",
-                              height: 24,
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            const Text("Sign In"),
-                          ],
-                        ),
+                    child: Container(
+                      padding: const EdgeInsets.all(10.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white, // Background color
+                        borderRadius: BorderRadius.circular(
+                            30.0), // Fully rounded borders
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                                Colors.black.withOpacity(0.1), // Shadow color
+                            spreadRadius: 1, // Spread radius
+                            blurRadius: 6, // Blur radius
+                            offset: const Offset(0, 1), // Shadow offset
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.network(
+                            "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/500px-Google_2015_logo.svg.png",
+                            height: 24,
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          const Text("Sign In"),
+                        ],
                       ),
                     ),
                   ),
