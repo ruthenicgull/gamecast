@@ -8,13 +8,13 @@ import '../widgets/events_tab.dart';
 class MatchPage extends StatelessWidget {
   final FullMatchData matchData;
 
-  const MatchPage({Key? key, required this.matchData}) : super(key: key);
+  const MatchPage({super.key, required this.matchData});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Match Details'),
+        title: const Text('Match Details'),
       ),
       body: Column(
         children: [
@@ -24,7 +24,7 @@ class MatchPage extends StatelessWidget {
               length: 3,
               child: Column(
                 children: [
-                  TabBar(
+                  const TabBar(
                     tabs: [
                       Tab(text: 'Lineups'),
                       Tab(text: 'Stats'),
