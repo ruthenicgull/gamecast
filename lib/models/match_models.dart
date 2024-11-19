@@ -227,7 +227,7 @@ class FullMatchData {
 
   // Helper methods
   Team getTeamById(String teamId) {
-    return homeTeam.teamId == teamId ? homeTeam : awayTeam;
+    return teamId == "home" ? homeTeam : awayTeam;
   }
 
   List<MatchEvent> getTeamEvents(String teamId) {

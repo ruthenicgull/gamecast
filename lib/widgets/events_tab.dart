@@ -8,8 +8,7 @@ class EventsTab extends StatelessWidget {
 
   String _getEventDescription(MatchEvent event) {
     final team = matchData.getTeamById(event.teamId);
-    final player1 =
-        team.players.firstWhere((p) => p.playerId == event.player1Id);
+    final player1 = team.players.firstWhere((p) => p.name == event.player1Id);
     String description = '';
 
     switch (event.eventType) {
