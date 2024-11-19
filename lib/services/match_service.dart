@@ -209,6 +209,8 @@ class MatchService {
       final matchDoc =
           await _firestore.collection('matches').doc(matchId).get();
 
+      print(matchDoc);
+
       if (!matchDoc.exists) continue;
 
       final match = Match.fromFirestore(matchDoc);
@@ -253,14 +255,9 @@ class MatchService {
   }
 
   Future<List<FullMatchData>> getPastMatches() async {
-    final now = DateTime.now();
-
     final matchesSnapshot = await _firestore
         .collection('matches')
-        .where('status', isEqualTo: 'completed')
-        .where('start_time', isLessThan: now)
-        .orderBy('start_time', descending: true)
-        .limit(50) // Limit to prevent loading too many matches
+        .where('status', isEqualTo: 'over')
         .get();
 
     List<FullMatchData> matches = [];

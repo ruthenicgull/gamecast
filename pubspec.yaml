@@ -42,6 +42,8 @@ dependencies:
   g_recaptcha_v3: ^0.0.6
   google_sign_in: ^6.2.1
   provider: ^6.1.2
+  intl: ^0.20.0
+  http: ^1.1.0
 
 dev_dependencies:
   flutter_test:

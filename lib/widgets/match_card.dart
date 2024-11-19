@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/match_models.dart';
+import 'package:intl/intl.dart';
 import '../services/EventBasedPredictor.dart';
 
 class MatchCard extends StatelessWidget {
@@ -28,9 +29,21 @@ class MatchCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    matchData.match.startTime.toString(),
-                    style: const TextStyle(color: Colors.grey),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Date: ${DateFormat('yyyy-MM-dd').format(matchData.match.startTime)}',
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Text(
+                        "Time: ${DateFormat('HH:mm').format(matchData.match.startTime)}",
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                    ],
                   ),
                   Container(
                     padding:
@@ -127,7 +140,7 @@ class MatchCard extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          '${(probability * 100).toStringAsFixed(2)}%',
+          '${((probability) * 100).toStringAsFixed(2)}%',
           style: const TextStyle(fontSize: 16),
         ),
       ],

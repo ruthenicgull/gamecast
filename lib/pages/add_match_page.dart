@@ -16,39 +16,13 @@ class AddMatchPage extends StatefulWidget {
 class _AddMatchPageState extends State<AddMatchPage> {
   final _formKey = GlobalKey<FormState>();
   final _matchService = MatchService();
-  DateTime? startTime;
   String homeTeamName = '';
   String awayTeamName = '';
   List<Player> homePlayers = [];
   List<Player> awayPlayers = [];
   bool isRecording = false;
+  bool isLoading = false; // New loading state
   String? currentMatchId;
-
-  Future<void> _selectDateTime(BuildContext context) async {
-    final DateTime? date = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now().subtract(const Duration(days: 1)),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-    );
-    if (date != null) {
-      final TimeOfDay? time = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.now(),
-      );
-      if (time != null) {
-        setState(() {
-          startTime = DateTime(
-            date.year,
-            date.month,
-            date.day,
-            time.hour,
-            time.minute,
-          );
-        });
-      }
-    }
-  }
 
   Widget _buildPlayerList(bool isHomeTeam) {
     final players = isHomeTeam ? homePlayers : awayPlayers;
@@ -113,13 +87,38 @@ class _AddMatchPageState extends State<AddMatchPage> {
   }
 
   Future<void> _startMatch() async {
-    if (_formKey.currentState!.validate() && startTime != null) {
+    final DateTime startTime = DateTime.now();
+
+    // Check if the form is valid
+    if (_formKey.currentState!.validate()) {
+      // Custom validation to check for empty fields
+      if (homeTeamName.isEmpty ||
+          awayTeamName.isEmpty ||
+          homePlayers.isEmpty ||
+          awayPlayers.isEmpty) {
+        // Show a SnackBar if any fields are empty
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content:
+                Text('Please fill in all fields before starting the match.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return; // Stop further execution
+      }
+
+      setState(() {
+        isLoading = true; // Start loading
+      });
+
       final userId = FirebaseAuth.instance.currentUser!.uid;
 
       final match = Match(
         matchId: '', // Will be updated after creation
-        startTime: startTime!,
-        endTime: startTime!.add(const Duration(hours: 2)), // Default duration
+        startTime: startTime,
+        endTime: startTime.add(
+          const Duration(hours: 1, minutes: 30),
+        ), // Default duration
         status: 'live',
       );
 
@@ -152,6 +151,7 @@ class _AddMatchPageState extends State<AddMatchPage> {
         final matchId = await _matchService.createMatch(fullMatchData, userId);
 
         setState(() {
+          isLoading = false; // Stop loading
           isRecording = true;
           currentMatchId = matchId; // Set the generated matchId
           match.matchId = matchId; // Update the match object
@@ -166,9 +166,25 @@ class _AddMatchPageState extends State<AddMatchPage> {
           ),
         );
       } catch (e) {
+        setState(() {
+          isLoading = false; // Stop loading in case of error
+        });
         print('Error creating match: $e');
-        // Optionally show an error dialog to the user
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error creating match: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
+    } else {
+      // Show SnackBar if the form is not valid
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill out the form correctly.'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -185,11 +201,6 @@ class _AddMatchPageState extends State<AddMatchPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextButton.icon(
-                icon: const Icon(Icons.calendar_today),
-                label: Text(startTime?.toString() ?? 'Select Start Time'),
-                onPressed: () => _selectDateTime(context),
-              ),
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Home Team Name'),
                 validator: (value) =>
@@ -207,36 +218,15 @@ class _AddMatchPageState extends State<AddMatchPage> {
               const SizedBox(height: 16),
               _buildPlayerList(false),
               const SizedBox(height: 24),
-              if (!isRecording)
+              if (isLoading)
+                Center(
+                    child:
+                        CircularProgressIndicator()) // Show loading indicator
+              else
                 OutlinedButton(
                   onPressed: _startMatch,
                   child: const Text('Start Match'),
-                )
-              // else
-              //   Column(
-              //     children: [
-              //       const Text('Recording Match Events'),
-              //       const SizedBox(height: 8),
-              //       ElevatedButton(
-              //         onPressed: () {
-              //           if (currentMatchId != null) {
-              //             Navigator.push(
-              //               context,
-              //               MaterialPageRoute(
-              //                 builder: (context) => RecordEventsPage(
-              //                   matchId: currentMatchId!,
-              //                   homeTeamName: homeTeamName,
-              //                   awayTeamName: awayTeamName,
-              //                   initialMatchData: ,
-              //                 ),
-              //               ),
-              //             );
-              //           }
-              //         },
-              //         child: const Text('Record Events'),
-              //       ),
-              //     ],
-              //   ),
+                ),
             ],
           ),
         ),
