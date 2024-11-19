@@ -552,7 +552,7 @@ class _HomeTabState extends State<HomeTab> {
             icon: const Icon(Icons.add),
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AddMatchPage()),
+              MaterialPageRoute(builder: (context) => const AddMatchPage()),
             ),
           ),
         ],

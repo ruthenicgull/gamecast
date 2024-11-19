@@ -92,14 +92,14 @@ class _RecordEventsPageState extends State<RecordEventsPage> {
 
       final homeTeam = Team(
         teamId: homeTeamRef.id,
-        teamName: homeSnapshot.get('team_name') ?? '' as String,
+        teamName: homeSnapshot.get('team_name') ?? '',
         teamType: TeamType.home,
         players: homeTeamPlayers,
       );
 
       final awayTeam = Team(
         teamId: awayTeamRef.id,
-        teamName: awaySnapshot.get('team_name') ?? '' as String,
+        teamName: awaySnapshot.get('team_name') ?? '',
         teamType: TeamType.away,
         players: awayTeamPlayers,
       );
@@ -186,10 +186,6 @@ class _RecordEventsPageState extends State<RecordEventsPage> {
   bool _validateForm() {
     if (_selectedTeamName == null) {
       _showSnackbar('Please select a team', isError: true);
-      return false;
-    }
-    if (_selectedEventType == null) {
-      _showSnackbar('Please select an event type', isError: true);
       return false;
     }
     if (_eventMinuteController.text.isEmpty) {
