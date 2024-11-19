@@ -166,11 +166,14 @@ class _RecordEventsPageState extends State<RecordEventsPage> {
         );
 
         await _matchService.addMatchEvent(widget.matchId, event);
-        if (event.teamId == "home") {
-          widget.initialMatchData.score.homeScore += 1;
-        } else {
-          widget.initialMatchData.score.awayScore += 1;
+        if (event.eventType == EventType.goal) {
+          if (event.teamId == "home") {
+            widget.initialMatchData.score.homeScore += 1;
+          } else {
+            widget.initialMatchData.score.awayScore += 1;
+          }
         }
+
         widget.initialMatchData.events.add(event);
         print("problem ends");
         _resetForm();
