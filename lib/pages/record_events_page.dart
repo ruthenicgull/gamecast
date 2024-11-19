@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:gamecast/pages/match_page.dart';
 import '../models/match_models.dart';
 import '../services/match_service.dart';
 
@@ -7,12 +8,14 @@ class RecordEventsPage extends StatefulWidget {
   final String matchId;
   final String homeTeamName;
   final String awayTeamName;
+  late FullMatchData initialMatchData;
 
-  const RecordEventsPage({
+  RecordEventsPage({
     super.key,
     required this.matchId,
     required this.homeTeamName,
     required this.awayTeamName,
+    required this.initialMatchData,
   });
 
   @override
@@ -163,9 +166,23 @@ class _RecordEventsPageState extends State<RecordEventsPage> {
         );
 
         await _matchService.addMatchEvent(widget.matchId, event);
+        if (event.teamId == "home") {
+          widget.initialMatchData.score.homeScore += 1;
+        } else {
+          widget.initialMatchData.score.awayScore += 1;
+        }
+        widget.initialMatchData.events.add(event);
         print("problem ends");
         _resetForm();
         _showSnackbar('Event recorded successfully');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MatchPage(
+              matchData: widget.initialMatchData,
+            ),
+          ),
+        );
       } catch (e) {
         _showSnackbar('Error recording event: $e', isError: true);
       }

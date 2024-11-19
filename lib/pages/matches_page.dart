@@ -479,8 +479,8 @@ class _MatchesPageState extends State<MatchesPage> {
         onTap: _onItemTapped,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: Icon(Icons.sports_soccer),
+            label: 'Live',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.sports),
@@ -491,8 +491,8 @@ class _MatchesPageState extends State<MatchesPage> {
             label: 'Past Matches',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people),
-            label: 'Users',
+            icon: Icon(Icons.person),
+            label: 'User',
           ),
         ],
       ),
@@ -714,6 +714,88 @@ class PastMatchesTab extends StatefulWidget {
   _PastMatchesTabState createState() => _PastMatchesTabState();
 }
 
+// class _PastMatchesTabState extends State<PastMatchesTab> {
+//   final MatchService _matchService = MatchService();
+//   List<FullMatchData> pastMatches = [];
+//   bool _isLoading = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _loadPastMatches();
+//   }
+
+//   Future<void> _loadPastMatches() async {
+//     setState(() {
+//       _isLoading = true;
+//     });
+//     try {
+//       // Assuming you'll add a method in MatchService to get past matches
+//       final matches = await _matchService.getPastMatches();
+//       setState(() {
+//         pastMatches = matches;
+//       });
+//     } finally {
+//       setState(() {
+//         _isLoading = false;
+//       });
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Past Matches'),
+//       ),
+//       body: _isLoading
+//           ? const Center(child: CircularProgressIndicator())
+//           : pastMatches.isEmpty
+//               ? Center(
+//                   child: Column(
+//                     mainAxisAlignment: MainAxisAlignment.center,
+//                     children: [
+//                       const Icon(
+//                         Icons.history,
+//                         size: 64,
+//                         color: Colors.grey,
+//                       ),
+//                       const SizedBox(height: 16),
+//                       const Text(
+//                         'No past matches found',
+//                         style: TextStyle(
+//                           fontSize: 18,
+//                           fontWeight: FontWeight.w500,
+//                           color: Colors.grey,
+//                         ),
+//                       ),
+//                       const SizedBox(height: 8),
+//                       TextButton(
+//                         onPressed: _loadPastMatches,
+//                         child: const Text('Refresh'),
+//                       ),
+//                     ],
+//                   ),
+//                 )
+//               : ListView.builder(
+//                   itemCount: pastMatches.length,
+//                   itemBuilder: (context, index) {
+//                     return MatchCard(
+//                       matchData: pastMatches[index],
+//                       onTap: () => Navigator.push(
+//                         context,
+//                         MaterialPageRoute(
+//                           builder: (context) =>
+//                               MatchPage(matchData: pastMatches[index]),
+//                         ),
+//                       ),
+//                     );
+//                   },
+//                 ),
+//     );
+//   }
+// }
+
 class _PastMatchesTabState extends State<PastMatchesTab> {
   final MatchService _matchService = MatchService();
   List<FullMatchData> pastMatches = [];
@@ -732,9 +814,10 @@ class _PastMatchesTabState extends State<PastMatchesTab> {
     try {
       // Assuming you'll add a method in MatchService to get past matches
       final matches = await _matchService.getPastMatches();
-      setState(() {
-        pastMatches = matches;
-      });
+
+      // Filter the matches to only include those with status 'over'
+      // final filteredMatches =
+      //     matches.where((match) => match.status == 'over').toList();
     } finally {
       setState(() {
         _isLoading = false;
