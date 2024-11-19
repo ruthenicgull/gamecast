@@ -340,7 +340,15 @@ class MatchService {
       await eventRef.set(
         event.toFirestore(),
       );
-      print("added success");
+      if (event.teamId == "home") {
+        await matchRef.collection('score').doc('current').update({
+          'home_score': FieldValue.increment(1), // Increment home score by 1
+        });
+      } else if (event.teamId == "away") {
+        await matchRef.collection('score').doc('current').update({
+          'away_score': FieldValue.increment(1), // Increment away score by 1
+        });
+      }
     } catch (e) {
       print("error while adding: $e");
     }
