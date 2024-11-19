@@ -141,23 +141,16 @@ class MatchService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Your existing methods...
-
   Future<List<FullMatchData>> getOngoingMatches() async {
-    final now = DateTime.now();
-    final startOfDay = DateTime(now.year, now.month, now.day);
-    final endOfDay = startOfDay.add(const Duration(days: 1));
-
     final matchesSnapshot = await _firestore
         .collection('matches')
-        .where('start_time', isLessThanOrEqualTo: now)
-        .where('start_time', isGreaterThanOrEqualTo: startOfDay)
-        .where('status', isEqualTo: 'ongoing')
+        .where('status', isEqualTo: 'live')
         .get();
 
     List<FullMatchData> matches = [];
     for (var doc in matchesSnapshot.docs) {
       final match = Match.fromFirestore(doc);
+      print(match.matchId);
       // Fetch related data
       final homeTeamDoc = await _firestore
           .collection('matches')

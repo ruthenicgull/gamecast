@@ -193,7 +193,10 @@ class _HomeTabState extends State<HomeTab> {
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load matches: $e')),
+        SnackBar(
+          content: Text('Failed to load matches: $e'),
+          duration: const Duration(seconds: 5),
+        ),
       );
     } finally {
       setState(() {
@@ -212,7 +215,7 @@ class _HomeTabState extends State<HomeTab> {
             icon: const Icon(Icons.add),
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const AddMatchPage()),
+              MaterialPageRoute(builder: (context) => AddMatchPage()),
             ),
           ),
         ],

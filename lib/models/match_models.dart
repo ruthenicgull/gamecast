@@ -65,10 +65,13 @@ class Team {
         (e) => e.toString() == 'TeamType.${data['team_type']}',
         orElse: () => TeamType.home,
       ),
-      players: playersData
-              ?.map((playerData) =>
-                  Player.fromFirestore(playerData as DocumentSnapshot))
-              .toList() ??
+      players: playersData?.map((playerData) {
+            // Convert the player data map to Player object
+            return Player.fromMap(
+              playerData as Map<String, dynamic>,
+              playerData['player_id'] ?? '', // Pass the player ID from the map
+            );
+          }).toList() ??
           [],
     );
   }
@@ -76,11 +79,14 @@ class Team {
   Map<String, dynamic> toFirestore() {
     return {
       'team_name': teamName,
-      'team_type': teamType
-          .name, // Use .name to get the string representation of the enum
+      'team_type': teamType.name,
       'players': players
-          .map((player) => player.toFirestore())
-          .toList(), // Convert each player to a map
+          .map((player) => {
+                ...player.toFirestore(),
+                'player_id':
+                    player.playerId, // Include the player ID in the map
+              })
+          .toList(),
     };
   }
 }
