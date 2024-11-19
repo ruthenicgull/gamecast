@@ -23,10 +23,19 @@ class EventBasedPredictor {
         1.0 - (homeWinProbability + (awayScore / totalScore));
     double awayWinProbability = awayScore / totalScore;
 
+    // Ensure no probabilities are negative
+    homeWinProbability = homeWinProbability < 0 ? 0 : homeWinProbability;
+    drawProbability = drawProbability < 0 ? 0 : drawProbability;
+    awayWinProbability = awayWinProbability < 0 ? 0 : awayWinProbability;
+
+    // Re-normalize to ensure the sum is 1
+    double sumProbabilities =
+        homeWinProbability + drawProbability + awayWinProbability;
+
     return MatchPrediction(
-      homeWinProbability: homeWinProbability,
-      drawProbability: drawProbability,
-      awayWinProbability: awayWinProbability,
+      homeWinProbability: homeWinProbability / sumProbabilities,
+      drawProbability: drawProbability / sumProbabilities,
+      awayWinProbability: awayWinProbability / sumProbabilities,
     );
   }
 
