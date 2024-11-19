@@ -444,6 +444,8 @@ import '../services/match_service.dart';
 import 'package:gamecast/models/match_models.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../services/EventBasedPredictor.dart';
+
 
 class MatchesPage extends StatefulWidget {
   const MatchesPage({super.key});
@@ -509,6 +511,7 @@ class HomeTab extends StatefulWidget {
 class _HomeTabState extends State<HomeTab> {
   final MatchService _matchService = MatchService();
   List<FullMatchData> ongoingMatches = [];
+  Map<String, MatchPrediction> predictions = {};
   bool _isLoading = false;
 
   @override
@@ -523,9 +526,16 @@ class _HomeTabState extends State<HomeTab> {
     });
     try {
       final matches = await _matchService.getOngoingMatches();
-      print('Fetched ${matches.length} ongoing matches');
+      // Calculate predictions for each match
+      final matchPredictions = <String, MatchPrediction>{};
+      for (var match in matches) {
+        matchPredictions[match.match.matchId] =
+            EventBasedPredictor.predictMatch(match);
+      }
+
       setState(() {
         ongoingMatches = matches;
+        predictions = matchPredictions;
       });
     } catch (e) {
       print('Failed to load ongoing matches: $e');
@@ -589,13 +599,14 @@ class _HomeTabState extends State<HomeTab> {
               : ListView.builder(
                   itemCount: ongoingMatches.length,
                   itemBuilder: (context, index) {
+                    final match = ongoingMatches[index];
                     return MatchCard(
-                      matchData: ongoingMatches[index],
+                      matchData: match,
+                      prediction: predictions[match.match.matchId],
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              MatchPage(matchData: ongoingMatches[index]),
+                          builder: (context) => MatchPage(matchData: match),
                         ),
                       ),
                     );
