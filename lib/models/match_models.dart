@@ -141,8 +141,8 @@ class Player {
 
 // Score Model
 class Score {
-  final int homeScore;
-  final int awayScore;
+  int homeScore;
+  int awayScore;
 
   Score({
     required this.homeScore,
@@ -214,7 +214,7 @@ class FullMatchData {
   final Match match;
   final Team homeTeam;
   final Team awayTeam;
-  final Score score;
+  Score score;
   final List<MatchEvent> events;
 
   FullMatchData({

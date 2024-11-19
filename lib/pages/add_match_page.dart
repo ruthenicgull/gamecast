@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gamecast/pages/match_page.dart';
 import '../models/match_models.dart';
 import '../services/match_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -114,7 +115,7 @@ class _AddMatchPageState extends State<AddMatchPage> {
   Future<void> _startMatch() async {
     if (_formKey.currentState!.validate() && startTime != null) {
       final userId = FirebaseAuth.instance.currentUser!.uid;
-  
+
       final match = Match(
         matchId: '', // Will be updated after creation
         startTime: startTime!,
@@ -149,12 +150,21 @@ class _AddMatchPageState extends State<AddMatchPage> {
       try {
         // Create match and get matchId
         final matchId = await _matchService.createMatch(fullMatchData, userId);
-        
+
         setState(() {
           isRecording = true;
           currentMatchId = matchId; // Set the generated matchId
           match.matchId = matchId; // Update the match object
         });
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MatchPage(
+              matchData: fullMatchData,
+            ),
+          ),
+        );
       } catch (e) {
         print('Error creating match: $e');
         // Optionally show an error dialog to the user
@@ -202,30 +212,31 @@ class _AddMatchPageState extends State<AddMatchPage> {
                   onPressed: _startMatch,
                   child: const Text('Start Match'),
                 )
-              else
-                Column(
-                  children: [
-                    const Text('Recording Match Events'),
-                    const SizedBox(height: 8),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (currentMatchId != null) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => RecordEventsPage(
-                                matchId: currentMatchId!,
-                                homeTeamName: homeTeamName,
-                                awayTeamName: awayTeamName,
-                              ),
-                            ),
-                          );
-                        }
-                      },
-                      child: const Text('Record Events'),
-                    ),
-                  ],
-                ),
+              // else
+              //   Column(
+              //     children: [
+              //       const Text('Recording Match Events'),
+              //       const SizedBox(height: 8),
+              //       ElevatedButton(
+              //         onPressed: () {
+              //           if (currentMatchId != null) {
+              //             Navigator.push(
+              //               context,
+              //               MaterialPageRoute(
+              //                 builder: (context) => RecordEventsPage(
+              //                   matchId: currentMatchId!,
+              //                   homeTeamName: homeTeamName,
+              //                   awayTeamName: awayTeamName,
+              //                   initialMatchData: ,
+              //                 ),
+              //               ),
+              //             );
+              //           }
+              //         },
+              //         child: const Text('Record Events'),
+              //       ),
+              //     ],
+              //   ),
             ],
           ),
         ),
